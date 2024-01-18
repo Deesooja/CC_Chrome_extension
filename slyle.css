@@ -1,0 +1,104 @@
+.Import_order {
+  background-color: rgb(173, 198, 48);
+}
+
+.Importing {
+  background-color: yellow;
+  color: black;
+}
+
+.Completed {
+  background-color: rgb(5, 213, 43);
+}
+
+.Import_unsuccessful {
+  background-color: red;
+}
+
+.txt {
+  color: yellow;
+}
+
+.error {
+  color: red;
+}
+/* .border{
+  border: 2px solid red;
+
+} */
+
+
+#btn_collection {
+  display: flex;
+  justify-content: space-evenly;
+}
+#logout_btn {
+  background-color: rgb(213, 206, 8);
+}
+.dw_value {
+  color: rgb(32, 32, 30);
+}
+/* #login_div{
+  border: 2px solid red;
+} */
+/* #logo_login{
+  border: 2px solid red;
+
+} */
+.logo{
+  width: 300px;
+  height: 50px;
+
+}
+#login_input_div{
+  /* border: 2px solid red; */
+  display: flex;
+  justify-content: center;
+
+}
+#submitbtn_div{
+  /* border: 2px solid red; */
+  display: flex;
+  justify-content: center;
+}
+/* #after_loging_section{
+border: 2px solid red;
+} */
+/* #drw_btn_div{
+  border: 2px solid red;
+
+} */
+#wf_lable{
+  font-size: 14px
+}
+
+#workflow_dropdown {
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.mg {
+  margin: 5px;
+}
+.bc{
+  background-color: rgb(239, 239, 54);
+}
+.s_btn{
+  background-color: rgb(243, 178, 58);
+}
+
+#progress_bar_div{
+  margin: 8px;
+  /* border: 2px solid red; */
+  display: flex;
+  justify-content: center;
+}
+#show_pergentage{
+  margin-left: 5px;
+}
+body{
+  border: 2px solid rgba(189, 237, 30, 0.649);
+  z-index: 1;
+  border-radius: 10px;
+}

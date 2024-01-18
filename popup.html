@@ -1,0 +1,83 @@
+<!-- popup.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="slyle.css" />
+    <script src="./background.mjs" type="module"></script>
+    <script src="popup.mjs" type="module"></script>
+  </head>
+  <body>
+    <div id="login_div">
+      <div id="logo_login_div">
+        <!-- <img src="https://constacloud.com/appconnect/images/appconnect-logo-color.png" alt=""> -->
+        <img
+          id="logo_for_login"
+          class="logo"
+          src="./MyLogos/appconnect-logo-color.png"
+          alt="AppConnect"
+        />
+      </div>
+      <!-- <p>---------------------------------------------------</p> -->
+      <hr />
+
+      <div id="login_input_div">
+        <input
+          type="email"
+          name="uname"
+          id="uname"
+          placeholder="Username"
+          required="text"
+          class="mg bc"
+        />
+        <small id="user_error" class="error"></small>
+
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="password"
+          required="text"
+          class="mg bc"
+        />
+        <small id="password_error" class="error"></small>
+      </div>
+
+      <div id="submitbtn_div">
+        <button id="submitbtn" class="mg s_btn">Login</button>
+      </div>
+    </div>
+
+    <div id="after_loging_section">
+      <div id="logo_for_wf_div">
+        <img
+          id="logo_for_wf"
+          class="logo"
+          src="./MyLogos/appconnect-logo-color.png"
+          alt="AppConnect"
+        />
+      </div>
+      <hr />
+      <div id="drw_btn_div">
+        <div id="workflow_dropdown" class="border">
+          <label for="wf" id="wf_lable">Choose WorkFlow:</label>
+          <select name="wf" id="workflow">
+            <option value="null">WorkFlow</option>
+          </select>
+        </div>
+
+        <div id="btn_collection" class="border">
+          <button id="scrapeButton" class="Import_order">Import Orders</button>
+
+          <button id="logout_btn" class="logout">logout</button>
+        </div>
+      </div>
+
+      <div id="progress_bar_div" class="border">
+        <div>
+          <progress id="progress_bar" value="0" max="0">100%</progress>
+          <small id="show_pergentage">0%</small>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
