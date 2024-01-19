@@ -91,14 +91,66 @@ export const UpdateTabUrl = async (tab, url) => {
   });
 };
 
+export const fulfilment_proccess_1 = async (tab) => {
+  // tab = await GetCurrentTab();
+  let is_process_done;
+  await new Promise(async (resolve, reject) => {
+    let is_fulfiled = await fulfilment_checker(tab);
+
+    // console.log("is_fulfiled", is_fulfiled);
+
+    if (is_fulfiled && is_fulfiled[0]) {
+      is_fulfiled = is_fulfiled[0].result;
+      // console.log("inside if ---> is_fulfiled", is_fulfiled);
+    }
+    // console.log("is_fulfiled", is_fulfiled);
+
+    if (is_fulfiled) {
+      tab = await GetCurrentTab();
+      let result = await ScriptExcuter(tab, fulfilmet_button_clicked);
+
+      if (result && result[0]) {
+        if (result[0].result) {
+          // Double check
+          let got_it;
+
+          got_it = await wait_for_submit_button(tab);
+
+          // console.log("got_it", got_it);
+
+          if (got_it) {
+            tab = await GetCurrentTab();
+
+            console.log("tab--------------------------------->>>>>>>>>>>", tab);
+
+            // let is_clicked = await submit_button_clicked_calling(tab);
+            let is_clicked = await ScriptExcuter(tab, submit_button_clicked);
+
+            if (is_clicked && is_clicked[0].result) {
+              resolve();
+              is_process_done = true;
+            }
+            console.log(
+              "Resolve--------------------------------------------------------------------Resolve"
+            );
+          }
+        }
+      }
+    } else {
+      resolve();
+      is_process_done = true;
+      console.log(
+        "Already Fulfiled--------------------------------------------------------------------"
+      );
+    }
+  });
+  // console.log("fulfilment_proccess_1---->> is_process_done", is_process_done)
+  return is_process_done;
+};
+
 export const IsPageLoaded = async (tab, url) => {
   let orderInfoElement = document.querySelector(".no-border.total span");
-  // console.log(
-  //   "Inside The Function >--setInterval---try->checking->orderInfoElement",
-  //   orderInfoElement
-  // );
   let title = document.title;
-  // console.log("setInterval-title", title);
   return orderInfoElement;
 };
 
@@ -153,147 +205,81 @@ export const WaitForPageLoading = async (
     let checkInterval = setInterval(async () => {
       try {
         tab = await GetCurrentTab();
-        // console.log("--setInterval---try");
         let orderInfoElement = await ScriptExcuter(tab, IsPageLoaded);
 
-        // console.log(
-        //   "--setInterval---try->checking->orderInfoElement",
-        //   orderInfoElement
-        // // );
-        // console.log("--setInterval---try->checking");
+        console.log("--setInterval---try->checking");
         // console.log("--setInterval---try->checking->url", tab.url);
 
         if (orderInfoElement && orderInfoElement[0].result) {
-          // console.log("isExcuted", isExcuted);
+          let fulfilment = false;
+          let is_fulfiled = false;
 
-          // console.log("link-Inside -InterVal", link);
-          // console.log("***Current PAge Url", tab.url);
-          if (!isExcuted.includes(tab.url)) {
-            clearInterval(checkInterval);
-            // console.log("Page Loaded--setInterval");
+          // fulfilment = await fulfilment_proccess_1(tab);
+
+          // if (!fulfilment_proccess_1.called) {
+          //   if(i==1){
+          //     fulfilment_proccess_1.called = true;
+          //   }
+
+          //   fulfilment = await fulfilment_proccess_1(tab);
+          // }
+          // i +=1
+          // let is_fulfiledd = await fulfilment_checker(tab);
+
+          // if (is_fulfiledd) {
+
+          //     let result = await ScriptExcuter(tab, fulfilmet_button_clicked);
+
+          //   // let result = await ScriptExcuter(tab, fulfilmet_button_clicked);
+
+          //   let got_it = await wait_for_submit_button(tab);
+
+          //   let is_clicked = await ScriptExcuter(tab, submit_button_clicked);
+
+          //   is_fulfiled = await wait_for_fulfilment_conformation(tab);
+
+          // }
+
+          fulfilment = await fulfilment_proccess_1(tab);
+
+          is_fulfiled = await wait_for_fulfilment_conformation(tab);
+
+          console.log("fulfilment", fulfilment);
+          console.log("is_fulfiled----->..>", is_fulfiled);
+
+          if (is_fulfiled) {
             if (!isExcuted.includes(tab.url)) {
-              isExcuted.push(tab.url);
-              // console.log("isExcuted-background-inside-if", isExcuted);
-            }
+              clearInterval(checkInterval);
 
-            // let is_process_done
-            // try {
-            //   is_process_done = await fulfilment_proccess_1(tab);
+              if (!isExcuted.includes(tab.url)) {
+                isExcuted.push(tab.url);
+              }
 
-            // } catch (error) {
-            //   console.error(error.message);
-            // }
-            // console.log("is_process_done---MAin", is_process_done)
-            // if(is_process_done){
-            //   resolve();
-            // }
+              console.log("WaitForPageLoading--->> Page is loaded");
 
-            // // Changing Fulfilment Status ->
-            // let is_process_done
-            // try {
-            //   is_process_done = await fulfilment_proccess_1(tab);
+              resolve();
+            } else {
+              console.log("WaitForPageLoading--->> Page not loaded yet");
 
-            // } catch (error) {
-            //   console.error(error.message);
-            // }
-            // console.log("is_process_done---MAin", is_process_done)
+              let non_excuted_links = await GetNonExcutedLinks(
+                order_detail_page_urls,
+                isExcuted
+              );
 
-            // await new Promise((resolve, reject)=>{
-            //   const interval_id = setInterval(async ()=>{
-            //     if(is_process_done){
-            //       await logs("Inside WaitForPageLoadingFunction - resolve")
-            //       clearInterval(interval_id)
-            //       resolve()
-            //     }else{
-            //       logs("Inside WaitForPageLoadingFunction  - wait for resolve")
-            //     }
+              if (non_excuted_links) {
+                await CreteProgressBarValue(isExcuted, max_value, dom);
 
-            //   },2000)
-
-            // })
-
-            logs("WaitForPageLoading--->> Page is loaded");
-            resolve();
-          } else {
-            logs("WaitForPageLoading--->> Page not loaded yet");
-            // console.log(
-            // "!isExcuted.includes(tab.url)---Else ----- Part-$$$$$-"
-            // );
-            // console.log("order_detail_page_urls", order_detail_page_urls);
-
-            let non_excuted_links = await GetNonExcutedLinks(
-              order_detail_page_urls,
-              isExcuted
-            );
-
-            // console.log("$$$$$$$$$-non_excuted_links", non_excuted_links);
-
-            if (non_excuted_links) {
-              await CreteProgressBarValue(isExcuted, max_value, dom);
-
-              // Updating URl here
-              UpdateTabUrl(tab, non_excuted_links[0]);
+                // Updating URl here
+                UpdateTabUrl(tab, non_excuted_links[0]);
+              }
             }
           }
         }
       } catch (error) {
-        // console.log("Page not loaded yet--setInterval");
         reject(error);
       }
     }, 5000);
   });
-
-  // await new Promise((resolve, reject) => {
-  //   let checkInterval = setInterval(async () => {
-  //     try {
-  //       // let tab = await GetCurrentTab();
-  //       let orderInfoElement = await ScriptExcuter(tab, IsPageLoaded);
-
-  //       if (orderInfoElement && orderInfoElement[0].result) {
-  //         console.log(
-  //           "isExcuted!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
-  //           isExcuted
-  //         );
-  //         if (!isExcuted.includes(tab.url)) {
-  //           clearInterval(checkInterval);
-  //           console.log("Page Loaded--setInterval");
-  //           resolve();
-  //         } else {
-  //           console.log(
-  //             "!isExcuted.includes(tab.url)---Else ----- Part-$$$$$-"
-  //           );
-  //           console.log("order_detail_page_urls", order_detail_page_urls);
-
-  //           let non_excuted_links = await GetNonExcutedLinks(
-  //             order_detail_page_urls,
-  //             isExcuted
-  //           );
-
-  //           console.log("$$$$$$$$$-non_excuted_links", non_excuted_links);
-
-  //           if (non_excuted_links) {
-  //             await CreteProgressBarValue(isExcuted, max_value, dom);
-  //             let tab = await GetCurrentTab();
-  //             // Update\ing URl here
-  //             console.log(
-  //               "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@@@@@@ non_excuted_links[0]",
-  //               non_excuted_links[0]
-  //             );
-
-  //             console.log(
-  //               "Befor Update &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@@@@@@ tab.url",
-  //               tab.url
-  //             );
-  //             await UpdateTabUrl(tab, non_excuted_links[0]);
-  //           }
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.log("Page not loaded yet--setInterval");
-  //       reject(error);
-  //     }
-  //   }, 5000);
-  // });
 };
 
 export const LoginResponseHandler = async (data, dom) => {
@@ -347,14 +333,8 @@ export const LoginResponseHandler = async (data, dom) => {
 
 export const PushInisExcuted = async (isExcuted) => {
   let tab = await GetCurrentTab();
-  // console.log(
-  //   "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! PushInisExcuted ",
-  //   tab.url
-  // );
+
   isExcuted.push(tab.url);
-  //   if (!isExcuted.includes(tab.url)) {
-  //     isExcuted.push(tab.url);
-  //   }
 };
 
 export const OrderDetailScraperCalling = async (OrderDetailScraper) => {
@@ -370,8 +350,6 @@ export const fulfilmet_button_clicked = async () => {
     ".ux-button.ux-text.ux-text-size0.ux-text-action.ux-button-primary"
   );
 
-  // console.log("fulfiled_btn", fulfiled_btn);
-
   if (fulfiled_btn) {
     let clicked = fulfiled_btn.click();
     // console.log("clicked", clicked);
@@ -381,15 +359,35 @@ export const fulfilmet_button_clicked = async () => {
 };
 
 export const submit_button_clicked = async () => {
+  let status = false;
   let popup_div = document.querySelector(".ux-dialog-details");
   // console.log("popup_div", popup_div);
+  if (popup_div) {
+    let submit_btn = popup_div.querySelector(
+      ".ux-button.ux-text.ux-text-size0.ux-text-action.ux-button-primary"
+    );
+    // console.log("submit_btn", submit_btn);
 
-  let submit_btn = popup_div.querySelector(
-    ".ux-button.ux-text.ux-text-size0.ux-text-action.ux-button-primary"
-  );
-  // console.log("submit_btn", submit_btn);
+    if (submit_btn) {
+      submit_btn.click();
+      status = true;
+    }
+  }
 
-  submit_btn.click();
+  return status;
+};
+
+export const submit_button_clicked_calling = async (tab) => {
+  let is_submited = false;
+  let is_clicked = await ScriptExcuter(tab, submit_button_clicked);
+  if (is_clicked && is_clicked[0].result) {
+    let is_fulfiled = wait_for_fulfilment_conformation(tab);
+
+    if (is_fulfiled) {
+      is_submited = is_fulfiled;
+    }
+    return is_submited;
+  }
 };
 
 export const wait_for_submit_button = async (tab) => {
@@ -403,15 +401,11 @@ export const wait_for_submit_button = async (tab) => {
         result = await ScriptExcuter(tab, async () => {
           let popup_div = document.querySelector(".ux-dialog-details");
 
-          // console.log("popup_div", popup_div);
-
-          // console.log("Waiting for popup @@@");
           return popup_div;
         });
       } catch (error) {
         console.error(error.massage);
       }
-      // console.log("result!!!!!!!!!!!!!!!!", result);
 
       if (result && result[0].result) {
         console.log("Time To ClearInterval");
@@ -424,20 +418,19 @@ export const wait_for_submit_button = async (tab) => {
         if (max_try == 4) {
           got_it = true;
           logs("Resolve After completed max_try");
+          clearInterval(interval_id);
           resolve();
         }
-        // console.log("wait_for_submit_button---->>else---result", result);
         max_try += 1;
       }
     }, 2000);
   });
 
-  // console.log("wait_for_submit_button---> got_it", got_it);
-
   return got_it;
 };
 
 export const wait_for_fulfilment_conformation = async (tab) => {
+  let is_fulfiled = false;
   await new Promise((resolve, reject) => {
     let interval_id = setInterval(async () => {
       tab = await GetCurrentTab();
@@ -466,8 +459,11 @@ export const wait_for_fulfilment_conformation = async (tab) => {
       // console.log("result!!!!!!!!!!!!!!!!", result);
 
       if (result && result[0].result) {
-        // console.log("Time To ClearInterval");
+        console.log(
+          "wait_for_fulfilment_conformation----->> Time To ClearInterval"
+        );
         clearInterval(interval_id);
+        is_fulfiled = true;
         resolve();
       } else {
         // console.log(
@@ -477,23 +473,8 @@ export const wait_for_fulfilment_conformation = async (tab) => {
       }
     }, 1000);
   });
+  return is_fulfiled;
 };
-
-// export const fulfilment_proccess_old = async (tab) => {
-//   tab = await GetCurrentTab();
-
-//   let result = await ScriptExcuter(tab, fulfilmet_button_clicked);
-
-//   await wait_for_submit_button(tab);
-
-//   await ScriptExcuter(tab, submit_button_clicked);
-
-//   await wait_for_fulfilment_conformation(tab);
-
-//   console.log(
-//     "Completed--------------------------------------------------------------------Done"
-//   );
-// };
 
 export const fulfilment_checker = async (tab) => {
   tab = await GetCurrentTab();
@@ -510,12 +491,6 @@ export const fulfilment_checker = async (tab) => {
           ".status-unfulfilled.flex-header-title.mr-5.inline-block.mb-0"
         );
       }
-
-      // console.log("fulfilment_status_p", fulfilment_status_p);
-      // console.log(
-      //   "fulfilment_status_p.innerHTML == Fulfilled",
-      //   fulfilment_status_p.innerHTML == "Fulfilled"
-      // );
 
       if (fulfilment_status_p && fulfilment_status_p.innerHTML == "Fulfilled") {
         let fulfilment_status = fulfilment_status_p.innerHTML;
@@ -535,79 +510,3 @@ export const fulfilment_checker = async (tab) => {
   }
   return result;
 };
-
-export const fulfilment_proccess_1 = async (tab) => {
-  tab = await GetCurrentTab();
-  let is_process_done;
-  await new Promise(async (resolve, reject) => {
-    let is_fulfiled = await fulfilment_checker(tab);
-
-    // console.log("is_fulfiled", is_fulfiled);
-
-    if (is_fulfiled && is_fulfiled[0]) {
-      is_fulfiled = is_fulfiled[0].result;
-      // console.log("inside if ---> is_fulfiled", is_fulfiled);
-    }
-    // console.log("is_fulfiled", is_fulfiled);
-
-    if (is_fulfiled) {
-      tab = await GetCurrentTab();
-      let result = await ScriptExcuter(tab, fulfilmet_button_clicked);
-
-      if (result && result[0]) {
-        if (result[0].result) {
-          // Double check
-          let got_it;
-
-          got_it = await wait_for_submit_button(tab);
-
-          // console.log("got_it", got_it);
-
-          if (got_it) {
-            resolve();
-            is_process_done = true;
-            console.log(
-              "Resolve--------------------------------------------------------------------Resolve"
-            );
-          }
-        }
-      }
-    } else {
-      resolve();
-      is_process_done = true;
-      console.log(
-        "Already Fulfiled--------------------------------------------------------------------"
-      );
-    }
-  });
-  // console.log("fulfilment_proccess_1---->> is_process_done", is_process_done)
-  return is_process_done;
-};
-
-// export const fulfilment_proccess = async (tab) => {
-//   let is_done = false
-//   await new Promise(async (resolve, reject) => {
-//     tab = await GetCurrentTab();
-//     let is_fulfiled = await fulfilment_checker(tab);
-//     if (is_fulfiled) {
-//       await ScriptExcuter(tab, fulfilmet_button_clicked);
-//       await wait_for_submit_button(tab);
-//       await ScriptExcuter(tab, submit_button_clicked);
-//       let result =await wait_for_fulfilment_conformation(tab);
-//       if (result && result[0].result) {
-//         console.log(
-//           "Completed--------------------------------------------------------------------Done"
-//         );
-//         is_done = true
-//         resolve();
-//         return true
-//       }
-//     } else {
-//       console.log(
-//         "Already Fulfiled--------------------------------------------------------------------"
-//       );
-//       resolve();
-//     }
-//   });
-//   return is_done
-// };

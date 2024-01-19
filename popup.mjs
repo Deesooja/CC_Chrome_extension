@@ -81,15 +81,6 @@ logout_btn.addEventListener("click", async () => {
 
 // OnClick UserLogin Function Call
 login_btn.addEventListener("click", async () => {
-  
-  // workflow_dropdown_lable.hidden = true
-  // after_loging_div.hidden=true
-  // dom.workflow_dropdown_div.hidden = true
-  // dom.workflow_dropdown_div.firstChild.hidden =true
-  // dom.appcon_logo_in_wf.hidden = true
-  // console.log("appcon_logo_in_wf", dom.appcon_logo_in_login)
-  // console.log("appcon_logo_in_login", dom.appcon_logo_in_wf)
-  // console.log("workflow_dropdown_div", dom.workflow_dropdown_div)
 
   login_btn.innerHTML = "Please Wait";
   await UserLogin(dom);
