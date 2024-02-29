@@ -1,8 +1,11 @@
-const protocall = "http";
-const domain = "127.0.0.1:8000";
+// const protocall = "http";
+// const domain = "127.0.0.1:8000";
 
 // const protocall = "https";
 // const domain = "useappconnect.com:8005";
+
+const protocall = "https";
+const domain = "ngxappconnect.constacloud.com";
 
 export const login_url = `${protocall}://${domain}/chrome-extension/login/godaddy`;
 
