@@ -36,7 +36,6 @@ export const OrderDetailScraper = async () => {
       // console.log(
       //   "Control Ceck ----------------------------------------> ok -2"
       // );
-
     } catch (error) {
       console.error(error.message);
     }
@@ -64,11 +63,11 @@ export const OrderDetailScraper = async () => {
       stock_items = [];
       console.error(error.message);
     }
-
+    
+    console.log("stock_items", stock_items)
     let stock_item_objects;
 
     try {
-      
       stock_item_objects = Array.from(stock_items).map(function (stock_item) {
         let return_object;
         try {
@@ -125,7 +124,11 @@ export const OrderDetailScraper = async () => {
             let quntity_tag = stock_item.querySelector(
               ".item-quantity.text-muted"
             );
-            quantity = quntity_tag.textContent.slice(9);
+            if (quntity_tag) {
+              quantity = quntity_tag.textContent.slice(9);
+            } else {
+              quantity = 1;
+            }
           } catch (err) {
             quantity = 1;
             console.error(err.message);
@@ -195,83 +198,161 @@ export const OrderDetailScraper = async () => {
       console.error(error.message);
     }
 
-    let shipping_address_div = document.querySelector("#order-shipping-info");
-
+    // ADDRESS SECTION
     let name;
-    let shipping_address_p_list;
-    try {
-      let name_strong_tag = shipping_address_div.querySelector(
-        ".mb-5.clearfix.recipient-name strong"
-      );
-      name = name_strong_tag.innerHTML;
-
-      shipping_address_p_list = shipping_address_div.querySelectorAll(
-        ".mb-20.user-address p"
-      );
-      // console.log("shipping_address_p_list", shipping_address_p_list);
-    } catch (error) {
-      shipping_address_p_list = [];
-      console.error(error.message);
-    }
-
-    let shipping_address_p_array = Array.from(shipping_address_p_list);
-
     let address;
     let street;
     let city;
     let contory;
     let zip_code;
+    let delevery_method;
+    let phone_number;
+    let email;
 
-    for (let i = 0; i < shipping_address_p_array.length; i++) {
-      try {
-        if (i == 0) {
-          address = shipping_address_p_array[0].innerHTML;
-        }
-        if (i == 1) {
-          street = shipping_address_p_array[1].innerHTML;
-        }
-        if (i == 2) {
-          city = shipping_address_p_array[2].innerHTML;
-        }
-        if (i == 3) {
-          contory = shipping_address_p_array[3].innerHTML;
-        }
-        if (i == 4) {
-          zip_code = shipping_address_p_array[4].innerHTML;
-        }
-      } catch (error) {
-        console.error(error.message);
-      }
+    let shipping_address_div = document.querySelector("#order-shipping-info");
+
+    // VALID FOR UK---------------------------------------------------------------------------------
+
+    let name_stronge_tag = shipping_address_div.querySelector(
+      ".mb-5.clearfix.recipient-name strong"
+    );
+    try {
+      name = name_stronge_tag.innerHTML;
+    } catch (error) {
+      console.log(error.message);
     }
-    let email_span = shipping_address_div.querySelector(
+
+    let address_div = shipping_address_div.querySelector(".mb-20.user-address");
+    try {
+      let all_address_p_tags = address_div.querySelectorAll("p");
+      let all_address_p_tags_array = Array.from(all_address_p_tags);
+      let length = all_address_p_tags_array.length;
+      if (length == 3) {
+        let address_1_p_tage = all_address_p_tags_array[0];
+        let address_2_p_tage = all_address_p_tags_array[1];
+        let city_and_pincode_p_tag = all_address_p_tags_array[2];
+        address = address_1_p_tage.innerHTML + address_2_p_tage.innerHTML;
+        let city_and_pincode = city_and_pincode_p_tag.innerHTML;
+        try {
+          let city_pincode_array = city_and_pincode.split(" ");
+          city = city_pincode_array[0];
+          zip_code = city_pincode_array[1];
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+      if (length == 2) {
+        let address_1_p_tage = all_address_p_tags_array[0];
+        address = address_1_p_tage.innerHTML;
+        let city_and_pincode_p_tag = all_address_p_tags_array[1];
+        let city_and_pincode = city_and_pincode_p_tag.innerHTML;
+        try {
+          let city_pincode_array = city_and_pincode.split(" ");
+          city = city_pincode_array[0];
+          zip_code = city_pincode_array[1];
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
+    // PHONE NUMBER SECTION
+    let phone_number_p_tag = shipping_address_div.querySelector(".mb-0");
+    if (phone_number_p_tag) {
+      phone_number = phone_number_p_tag.textContent.trim();
+    }
+
+    let email_p_tag = shipping_address_div.querySelector(
       ".mb-10.user-email-address"
     );
-
-    let phone_span = document.querySelector("#order-shipping-info .mb-0");
-    let phone_number;
     try {
-      phone_number = phone_span.textContent;
-    } catch (err) {
-      phone_number = null;
-      console.error(err.message + err.stack);
-    }
-
-    let email;
-    try {
-      email = email_span.textContent;
+      email = email_p_tag.textContent.trim();
     } catch (error) {
-      console.error(error.message);
+      console.log(error.message);
     }
 
-    let delevery_method_p_tag =
-      shipping_address_div.querySelector(".clearfix p");
+    let shipping_method_p_tags =
+      shipping_address_div.querySelectorAll("p.clearfix");
 
-    let delevery_method;
+    let shipping_method_p_tags_array = Array.from(shipping_method_p_tags);
+
     try {
-      delevery_method = delevery_method_p_tag.innerHTML;
+      let shipping_method_p_tag =
+        shipping_method_p_tags_array[shipping_method_p_tags_array.length - 1];
+      delevery_method = shipping_method_p_tag.querySelector("p").innerHTML;
     } catch (error) {
-      console.error(error.message);
+      console.log(error.message);
     }
+
+    // VALID FOR INDAI---------------------------------------------------------------------------------
+
+    // let shipping_address_p_list;
+    // try {
+    //   let name_strong_tag = shipping_address_div.querySelector(
+    //     ".mb-5.clearfix.recipient-name strong"
+    //   );
+    //   name = name_strong_tag.innerHTML;
+
+    //   shipping_address_p_list = shipping_address_div.querySelectorAll(
+    //     ".mb-20.user-address p"
+    //   );
+    //
+    // } catch (error) {
+    //   shipping_address_p_list = [];
+    //   console.error(error.message);
+    // }
+
+    // let shipping_address_p_array = Array.from(shipping_address_p_list);
+
+    // for (let i = 0; i < shipping_address_p_array.length; i++) {
+    //   try {
+    //     if (i == 0) {
+    //       address = shipping_address_p_array[0].innerHTML;
+    //     }
+    //     if (i == 1) {
+    //       street = shipping_address_p_array[1].innerHTML;
+    //     }
+    //     if (i == 2) {
+    //       city = shipping_address_p_array[2].innerHTML;
+    //     }
+    //     if (i == 3) {
+    //       contory = shipping_address_p_array[3].innerHTML;
+    //     }
+    //     if (i == 4) {
+    //       zip_code = shipping_address_p_array[4].innerHTML;
+    //     }
+    //   } catch (error) {
+    //     console.error(error.message);
+    //   }
+    // }
+    // let email_span = shipping_address_div.querySelector(
+    //   ".mb-10.user-email-address"
+    // );
+
+    // let phone_span = document.querySelector("#order-shipping-info .mb-0");
+    // try {
+    //   phone_number = phone_span.textContent;
+    // } catch (err) {
+    //   phone_number = null;
+    //   console.error(err.message + err.stack);
+    // }
+
+    // try {
+    //   email = email_span.textContent;
+    // } catch (error) {
+    //   console.error(error.message);
+    // }
+
+    // let delevery_method_p_tag =
+    //   shipping_address_div.querySelector(".clearfix p");
+
+    // try {
+    //   delevery_method = delevery_method_p_tag.innerHTML;
+    // } catch (error) {
+    //   console.error(error.message);
+    // }
 
     let shipping_address = {
       name: name,
@@ -291,24 +372,29 @@ export const OrderDetailScraper = async () => {
       let is_paid_p = document.querySelector(".status-paid.mb-0");
 
       let paid_on_div = document.querySelector("#order-history-list div");
-      // console.log("paid_on_div ", paid_on_div);
-      let is_paid = is_paid_p.innerHTML;
 
-      paid_on = paid_on_div.textContent;
-      // console.log("paid_on!!!!!! ", paid_on);
+      if (is_paid_p) {
+        let is_paid = is_paid_p.innerHTML;
 
-      if (is_paid == "Paid") {
-        payment = {
-          amount: total,
-          payment_mode: "Offline",
-          currency_symbol: currency_symbol,
-          payment_date: paid_on,
-        };
+        paid_on = paid_on_div.textContent;
+
+        console.log("paid_on", paid_on);
+
+        if (is_paid == "Paid") {
+          payment = {
+            amount: total,
+            payment_mode: "Offline",
+            currency_symbol: currency_symbol,
+            payment_date: paid_on,
+          };
+        }
+      } else {
+        payment = {};
       }
     } catch (error) {
       payment = {};
     }
-    // console.log("payment@@@@@ ", payment);
+
     let created_date_div = document.querySelector(
       ".order-history-date.no-wrap div"
     );
