@@ -63,8 +63,8 @@ export const OrderDetailScraper = async () => {
       stock_items = [];
       console.error(error.message);
     }
-    
-    console.log("stock_items", stock_items)
+
+    // console.log("stock_items", stock_items);
     let stock_item_objects;
 
     try {
@@ -203,7 +203,7 @@ export const OrderDetailScraper = async () => {
     let address;
     let street;
     let city;
-    let contory;
+    let country;
     let zip_code;
     let delevery_method;
     let phone_number;
@@ -227,24 +227,13 @@ export const OrderDetailScraper = async () => {
       let all_address_p_tags = address_div.querySelectorAll("p");
       let all_address_p_tags_array = Array.from(all_address_p_tags);
       let length = all_address_p_tags_array.length;
+      // UK CONDITION
       if (length == 3) {
         let address_1_p_tage = all_address_p_tags_array[0];
         let address_2_p_tage = all_address_p_tags_array[1];
-        let city_and_pincode_p_tag = all_address_p_tags_array[2];
-        address = address_1_p_tage.innerHTML + address_2_p_tage.innerHTML;
-        let city_and_pincode = city_and_pincode_p_tag.innerHTML;
-        try {
-          let city_pincode_array = city_and_pincode.split(" ");
-          city = city_pincode_array[0];
-          zip_code = city_pincode_array[1];
-        } catch (error) {
-          console.log(error.message);
-        }
-      }
-      if (length == 2) {
-        let address_1_p_tage = all_address_p_tags_array[0];
+        let city_and_pincode_p_tag = all_address_p_tags_array[length-1];
+        street = address_2_p_tage.innerHTML;
         address = address_1_p_tage.innerHTML;
-        let city_and_pincode_p_tag = all_address_p_tags_array[1];
         let city_and_pincode = city_and_pincode_p_tag.innerHTML;
         try {
           let city_pincode_array = city_and_pincode.split(" ");
@@ -253,10 +242,31 @@ export const OrderDetailScraper = async () => {
         } catch (error) {
           console.log(error.message);
         }
+        country  = "UK"
+      }
+
+      // OTHER COUNTRY
+      if (length == 4) {
+        let address_1_p_tage = all_address_p_tags_array[0];
+        let address_2_p_tage = all_address_p_tags_array[1];
+        street = address_2_p_tage.innerHTML;
+        address = address_1_p_tage.innerHTML;
+        let city_and_pincode_p_tag = all_address_p_tags_array[length-2];
+        let city_and_pincode = city_and_pincode_p_tag.innerHTML;
+        try {
+          let city_pincode_array = city_and_pincode.split(" ");
+          city = city_pincode_array[0];
+          zip_code = city_pincode_array[1];
+        } catch (error) {
+          console.log(error.message);
+        }
+        let country_p_tag = all_address_p_tags_array[length-1];
+        country = country_p_tag.innerHTML
       }
     } catch (error) {
       console.log(error.message);
     }
+
 
     // PHONE NUMBER SECTION
     let phone_number_p_tag = shipping_address_div.querySelector(".mb-0");
@@ -359,7 +369,7 @@ export const OrderDetailScraper = async () => {
       address: address,
       street: street,
       city: city,
-      country: contory,
+      country: country,
       zip_code: zip_code,
       email: email,
       phone_number: phone_number,
@@ -406,6 +416,7 @@ export const OrderDetailScraper = async () => {
       fulfilment_status: fulfilment_status,
       shipping_address: shipping_address,
       line_items: stock_item_objects,
+      currency_symbol: currency_symbol,
       sub_total: sub_total,
       shipping_total: shipping_total,
       total: total,
