@@ -89,6 +89,14 @@ export const OrderDetailScraper = async () => {
             item_total_amount = item_total_with_currency.slice(1);
             // console.log("item_total_with_currency", item_total_with_currency);
             // console.log("item_total", item_total_amount);
+            if (item_total_amount.indexOf(",") !== -1) {
+              let new_string = "";
+              let split_array = item_total_amount.split(",");
+              for (let i in split_array) {
+                new_string += split_array[i];
+              }
+              item_total_amount = new_string;
+            }
           } catch (error) {
             console.error(error.message);
           }
@@ -160,6 +168,14 @@ export const OrderDetailScraper = async () => {
       // console.log("sub_total_span", sub_total_span);
       // console.log("sub_total_with_currency", sub_total_with_currency);
       // console.log("sub_total", sub_total);
+      if (sub_total.indexOf(",") !== -1) {
+        let new_string = "";
+        let split_array = sub_total.split(",");
+        for (let i in split_array) {
+          new_string += split_array[i];
+        }
+        sub_total = new_string;
+      }
     } catch (error) {
       console.error(error.message);
     }
@@ -180,6 +196,14 @@ export const OrderDetailScraper = async () => {
       // console.log("shipping_total_span", shipping_total_span);
       // console.log("shipping_total_with_currency", shipping_total_with_currency);
       // console.log("shipping_total", shipping_total);
+      if (shipping_total.indexOf(",") !== -1) {
+        let new_string = "";
+        let split_array = shipping_total.split(",");
+        for (let i in split_array) {
+          new_string += split_array[i];
+        }
+        shipping_total = new_string;
+      }
     } catch (error) {
       console.error(error.message);
     }
@@ -194,6 +218,14 @@ export const OrderDetailScraper = async () => {
       // console.log("total_span", total_span);
       // console.log("total_with_currency", total_with_currency);
       // console.log("total", total);
+      if (total.indexOf(",") !== -1) {
+        let new_string = "";
+        let split_array = total.split(",");
+        for (let i in split_array) {
+          new_string += split_array[i];
+        }
+        total = new_string;
+      }
     } catch (error) {
       console.error(error.message);
     }
@@ -231,7 +263,7 @@ export const OrderDetailScraper = async () => {
       if (length == 3) {
         let address_1_p_tage = all_address_p_tags_array[0];
         let address_2_p_tage = all_address_p_tags_array[1];
-        let city_and_pincode_p_tag = all_address_p_tags_array[length-1];
+        let city_and_pincode_p_tag = all_address_p_tags_array[length - 1];
         street = address_2_p_tage.innerHTML;
         address = address_1_p_tage.innerHTML;
         let city_and_pincode = city_and_pincode_p_tag.innerHTML;
@@ -242,7 +274,7 @@ export const OrderDetailScraper = async () => {
         } catch (error) {
           console.log(error.message);
         }
-        country  = "UK"
+        // country = "UK";
       }
 
       // OTHER COUNTRY
@@ -251,7 +283,7 @@ export const OrderDetailScraper = async () => {
         let address_2_p_tage = all_address_p_tags_array[1];
         street = address_2_p_tage.innerHTML;
         address = address_1_p_tage.innerHTML;
-        let city_and_pincode_p_tag = all_address_p_tags_array[length-2];
+        let city_and_pincode_p_tag = all_address_p_tags_array[length - 2];
         let city_and_pincode = city_and_pincode_p_tag.innerHTML;
         try {
           let city_pincode_array = city_and_pincode.split(" ");
@@ -260,13 +292,12 @@ export const OrderDetailScraper = async () => {
         } catch (error) {
           console.log(error.message);
         }
-        let country_p_tag = all_address_p_tags_array[length-1];
-        country = country_p_tag.innerHTML
+        let country_p_tag = all_address_p_tags_array[length - 1];
+        country = country_p_tag.innerHTML;
       }
     } catch (error) {
       console.log(error.message);
     }
-
 
     // PHONE NUMBER SECTION
     let phone_number_p_tag = shipping_address_div.querySelector(".mb-0");
@@ -409,7 +440,7 @@ export const OrderDetailScraper = async () => {
       ".order-history-date.no-wrap div"
     );
     let created_date = created_date_div.innerHTML;
-
+    
     let order_object = {
       order_id: order_id,
       created_date: created_date,
